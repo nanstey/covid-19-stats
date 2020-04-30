@@ -1,5 +1,6 @@
 {
   "name": "covid-stats",
+  "homepage": "http://covid-19-stats.ca",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
