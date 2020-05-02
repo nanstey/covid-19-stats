@@ -1,22 +1,30 @@
 require("dotenv").config();
 const { Pool, Client } = require("pg");
-const connectionString = "NOT_A_REAL_CONNECTION_STRING";
+
 const pool = new Pool({
-  connectionString: connectionString,
+  user: process.env.PGUSER,
+  password: process.env.PGPASSWORD,
+  host: process.env.PGHOST,
+  port: process.env.PGPORT,
+  database: process.env.PGDATABASE,
 });
 
-pool.query("SELECT NOW()", (err, res) => {
-  console.log(err, res);
-  pool.end();
-});
+function insertData(row) {
+  pool.query(
+    "INSERT INTO region_data (pruid, date, numtoday, numdeaths, numrecover, numprob, numconf, numtotal, numtested) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) ON CONFLICT DO NOTHING",
+    [
+      row.pruid,
+      row.date.split("-").reverse().join("-"),
+      row.numtoday > 0 ? row.numtoday : 0,
+      row.numdeaths > 0 ? row.numdeaths : 0,
+      row.numrecover > 0 ? row.numrecover : 0,
+      row.numprob > 0 ? row.numprob : 0,
+      row.numconf > 0 ? row.numconf : 0,
+      row.numtotal > 0 ? row.numtotal : 0,
+      row.numtested > 0 ? row.numtested : 0,
+    ]
+  );
+}
 
-const client = new Client({
-  connectionString: connectionString,
-});
-
-client.connect();
-
-client.query("SELECT NOW()", (err, res) => {
-  console.log(err, res);
-  client.end();
-});
+exports.insertData = insertData;
+module.exports = pool;

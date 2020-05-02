@@ -3,3 +3,4 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/user/public_html/covid-19-stats
     - /bin/cp -R build $DEPLOYPATH
+    - /bin/cp -R build $DEPLOYPATH

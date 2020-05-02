@@ -1,6 +1,8 @@
+const request = require("request");
 const csv = require("csv-parser");
 const fs = require("fs");
-const getData = require("../lib/getData.js");
+
+const { insertData } = require("./db.js");
 
 const regions = {
   Canada: {
@@ -80,22 +82,24 @@ const regions = {
   },
 };
 
-fs.createReadStream("data/covid19.csv")
-  .pipe(csv())
-  .on("data", (row) => {
-    let regionName = row.prname;
-    regions[regionName].data.push(row);
-  })
-  .on("end", () => {
-    fs.writeFile(
-      "./data/data.json",
-      JSON.stringify(regions, null, 4),
-      (err) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
-        console.log("File has been created");
-      }
-    );
-  });
+request.get(
+  "https://health-infobase.canada.ca/src/data/covidLive/covid19.csv",
+  function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      fs.writeFile("data/data.csv", body, (err) => {
+        if (err) return console.log(err);
+
+        fs.createReadStream("data/data.csv")
+          .pipe(csv())
+          .on("data", (row) => {
+            insertData(row);
+          })
+          .on("end", () => {
+            console.log("import complete");
+          });
+      });
+    } else {
+      console.log(error);
+    }
+  }
+);

@@ -11,22 +11,7 @@ const axios = require("axios").default;
 
 const axiosInstance = axios.create({ baseURL: "http://localhost:8080" });
 
-let timeFormat = "DD-MM-YYYY";
-let regionIds = [
-  "CA",
-  "QC",
-  "ON",
-  "AB",
-  "BC",
-  "NS",
-  "SK",
-  "MB",
-  "NL",
-  "NB",
-  "PE",
-  "YT",
-  "NT",
-];
+let timeFormat = "YYYY-MM-DD";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,49 +25,67 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+async function getRegions(cb) {
+  try {
+    let { data } = await axiosInstance(`/regions`);
+    cb(data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function getRegionData(id, cb) {
+  try {
+    let { data } = await axiosInstance(`?id=${id}`);
+    cb(data);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 function App() {
   const classes = useStyles();
-  const [id, setId] = useState("CA");
-  const [region, setRegion] = useState({
+  const [regions, setRegions] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState({
+    pruid: 1,
     name: "Canada",
+    code: "CA",
+  });
+  const [regionData, setRegionData] = useState({
     totalData: [],
     dailyData: [],
   });
 
   useEffect(() => {
-    async function getRegionData() {
-      try {
-        let { data } = await axiosInstance(`?id=${id}`);
-        setRegion(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
+    getRegions(setRegions);
+  }, []);
 
-    getRegionData();
-  }, [id]);
+  useEffect(() => {
+    getRegionData(selectedRegion.pruid, setRegionData);
+  }, [selectedRegion]);
 
   return (
     <div className="App">
       <AppBar position="fixed">
         <Toolbar className="toolbar">
           <Typography variant="h4" className={classes.title}>
-            {region.name}
+            {selectedRegion && selectedRegion.name}
           </Typography>
           <ToggleButtonGroup
             variant="contained"
             color="primary"
             aria-label="contained primary button group"
           >
-            {regionIds.map((regionId) => (
-              <ToggleButton
-                key={regionId}
-                selected={regionId === id}
-                onClick={() => setId(regionId)}
-              >
-                {regionId}
-              </ToggleButton>
-            ))}
+            {regions &&
+              regions.map((region) => (
+                <ToggleButton
+                  key={region.pruid}
+                  selected={region.pruid === selectedRegion.pruid}
+                  onClick={() => setSelectedRegion(region)}
+                >
+                  {region.code}
+                </ToggleButton>
+              ))}
           </ToggleButtonGroup>
         </Toolbar>
       </AppBar>
@@ -90,14 +93,14 @@ function App() {
       <div className="charts">
         <div className="chartContainer">
           <Line
-            data={region.totalData}
+            data={regionData.totalData}
             options={{
               aspectRatio: 1.67,
               maintainAspectRatio: true,
               responsive: true,
               title: {
                 display: true,
-                text: "Total COVID-19 Cases for " + region.name,
+                text: "Total COVID-19 Cases for " + selectedRegion.name,
               },
               scales: {
                 xAxes: [
@@ -127,14 +130,14 @@ function App() {
         </div>
         <div className="chartContainer">
           <Bar
-            data={region.dailyData}
+            data={regionData.dailyData}
             options={{
               aspectRatio: 1.67,
               maintainAspectRatio: true,
               responsive: true,
               title: {
                 display: true,
-                text: "Daily COVID-19 Cases for " + region.name,
+                text: "Daily COVID-19 Cases for " + selectedRegion.name,
               },
               scales: {
                 xAxes: [
