@@ -102,6 +102,11 @@ function App() {
                 display: true,
                 text: "Total COVID-19 Cases for " + selectedRegion.name,
               },
+              elements: {
+                line: {
+                  tension: 0,
+                },
+              },
               scales: {
                 xAxes: [
                   {
