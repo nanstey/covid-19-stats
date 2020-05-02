@@ -40,9 +40,10 @@ function formatDataForLineChart(regionData) {
 
   let numrecover = 0;
   data.datasets[1].data = regionData.map((day) => {
-    numrecover = Number.isInteger(parseInt(day.numrecover))
-      ? day.numrecover
-      : numrecover;
+    numrecover = Math.max(
+      Number.isInteger(parseInt(day.numrecover)) ? day.numrecover : 0,
+      numrecover
+    );
 
     return {
       x: day.date,
@@ -76,7 +77,7 @@ function formatDataForBarChart(regionData) {
     numrecover = Number.isInteger(parseInt(day.numrecover))
       ? day.numrecover
       : numrecover;
-    const recovered = numrecover - lastrecover;
+    const recovered = Math.max(numrecover - lastrecover, 0);
     lastrecover = numrecover;
 
     return {
