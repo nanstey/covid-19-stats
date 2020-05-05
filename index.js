@@ -3,7 +3,7 @@ const path = require('path');
 var cors = require("cors");
 const app = express();
 const getData = require("./src/getData.js");
-const pool = require("./src/db.js");
+const {pool} = require("./src/db.js");
 
 var allowedOrigins = ["http://localhost:3000", "http://covid-19-stats.ca"];
 app.use(

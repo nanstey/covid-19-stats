@@ -1,12 +1,12 @@
 require("dotenv").config();
-const { Pool, Client } = require("pg");
+const { Pool } = require("pg");
 
 const pool = new Pool({
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  host: process.env.PGHOST,
-  port: process.env.PGPORT,
-  database: process.env.PGDATABASE,
+    host: process.env.PG_HOST,
+    database: process.env.PG_DATABASE,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    port: process.env.PG_PORT,
 });
 
 function insertData(row) {
@@ -27,4 +27,4 @@ function insertData(row) {
 }
 
 exports.insertData = insertData;
-module.exports = pool;
+exports.pool = pool;
