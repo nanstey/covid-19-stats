@@ -24,7 +24,8 @@
     "request": "^2.88.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node ./src/updateData.js &&  node index.js",
+    "react": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
