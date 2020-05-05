@@ -1,5 +1,3 @@
-CREATE DATABASE covidstats;
-
 CREATE TABLE region (
     pruid INT PRIMARY KEY,
     code VARCHAR,
