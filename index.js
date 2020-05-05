@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require('path');
 var cors = require("cors");
 const app = express();
 const getData = require("./src/getData.js");
@@ -19,8 +20,9 @@ app.use(
     },
   })
 );
+app.use(express.static(path.join(__dirname, "/build")));
 
-app.get("/regions", async (req, res) => {
+app.get("/api/regions", async (req, res) => {
   try {
     const regions = await pool.query(
       "SELECT r.pruid, r.code, r.name, MAX(rd.numtotal) as total " +
@@ -36,11 +38,11 @@ app.get("/regions", async (req, res) => {
   }
 });
 
-app.get("/", async (req, res) => {
+app.get("/api/regions/:id", async (req, res) => {
   try {
     const regionData = await pool.query(
       "SELECT * FROM region_data WHERE pruid = $1 ORDER BY date",
-      [req.query.id]
+      [req.params.id]
     );
     const response = {
       totalData: getData.formatDataForLineChart(regionData.rows),
@@ -51,6 +53,10 @@ app.get("/", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+});
+
+app.get("/*", (reqs, res) => {
+  res.sendFile(path.join(__dirname, "/build/index.html"));
 });
 
 app.listen(process.env.PORT || 8080);

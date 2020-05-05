@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 async function getRegions(cb) {
   try {
-    let { data } = await axiosInstance(`/regions`);
+    let { data } = await axiosInstance(`/api/regions`);
     cb(data);
   } catch (error) {
     console.log(error);
@@ -36,7 +36,7 @@ async function getRegions(cb) {
 
 async function getRegionData(id, cb) {
   try {
-    let { data } = await axiosInstance(`?id=${id}`);
+    let { data } = await axiosInstance(`/api/regions/${id}`);
     cb(data);
   } catch (error) {
     console.log(error);
