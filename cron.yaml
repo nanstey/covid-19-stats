@@ -1,0 +1,4 @@
+cron:
+- description: 'Get latest covid data'
+  url: /cron/updateData
+  schedule: every 24 hours

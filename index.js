@@ -3,6 +3,7 @@ const path = require('path');
 var cors = require("cors");
 const app = express();
 const getData = require("./src/getData.js");
+const { updateData } = require("./src/updateData.js");
 const {pool} = require("./src/db.js");
 
 var allowedOrigins = [
@@ -40,6 +41,7 @@ app.get("/api/regions", async (req, res) => {
     res.json(regions.rows);
   } catch (err) {
     console.log(err);
+    res.json(err);
   }
 });
 
@@ -57,6 +59,16 @@ app.get("/api/regions/:id", async (req, res) => {
     res.json(response);
   } catch (err) {
     console.log(err);
+    res.json(err);
+  }
+});
+
+app.get("/cron/updateData", async (req, res) => {
+  try {
+    updateData();
+    res.json("Success");
+  } catch (err) {
+    res.json(err);
   }
 });
 
