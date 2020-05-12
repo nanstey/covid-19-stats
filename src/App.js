@@ -9,7 +9,7 @@ import { Bar, Line } from "react-chartjs-2";
 import "./App.css";
 const axios = require("axios").default;
 
-const axiosInstance = axios.create({ baseURL: "http://localhost:8080" });
+const axiosInstance = axios.create();
 
 let timeFormat = "YYYY-MM-DD";
 
