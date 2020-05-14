@@ -2,6 +2,10 @@
   margin-top: 80px;
 }
 
+.MuiToggleButtonGroup-root {
+  margin-right: 16px;
+}
+
 .MuiToggleButton-root {
   background-color: white !important;
   color: black !important;
@@ -13,7 +17,7 @@
 }
 
 .toolbar {
-  max-width: 1050px;
+  max-width: 1000px;
   margin: auto;
   width: 100%;
 }
@@ -25,4 +29,18 @@
   width: 98vw;
   max-width: 1080px;
   right: 10px;
+}
+
+.menuButton {
+  color: white !important;
+  display: none !important;
+}
+
+.MuiToggleButtonGroup-root {
+  display: none !important;
+}
+.menuButton {
+  display: flex !important;
+}
+@media only screen and (max-width: 1023px) {
 }
