@@ -14,8 +14,11 @@ import { Slide } from "@material-ui/core";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import { Bar, Line } from "react-chartjs-2";
 import "./App.css";
-const axios = require("axios").default;
 
+import ReactGA from "react-ga";
+ReactGA.initialize(process.env.REACT_APP_GA_ID);
+
+const axios = require("axios").default;
 const axiosInstance = axios.create();
 
 let timeFormat = "YYYY-MM-DD";
@@ -70,6 +73,7 @@ function App() {
   const trigger = useScrollTrigger({ threshold: 50 });
 
   useEffect(() => {
+    ReactGA.pageview(window.location.pathname + window.location.search);
     getRegions(setRegions);
   }, []);
 
