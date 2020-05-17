@@ -1,16 +1,16 @@
 const express = require("express");
-const path = require('path');
+const path = require("path");
 var cors = require("cors");
 const app = express();
-const getData = require("./src/getData.js");
-const { updateData } = require("./src/updateData.js");
-const {pool} = require("./src/db.js");
+const getData = require("./src/lib/getData.js");
+const { updateData } = require("./src/lib/updateData.js");
+const { pool } = require("./src/lib/db.js");
 
 var allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:8080",
   "https://covid-19-stats-276205.wl.r.appspot.com/",
-  "http://covid-19-stats.ca"
+  "http://covid-19-stats.ca",
 ];
 app.use(
   cors({

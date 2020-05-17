@@ -12,16 +12,14 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Slide } from "@material-ui/core";
 import useScrollTrigger from "@material-ui/core/useScrollTrigger";
-import { Bar, Line } from "react-chartjs-2";
-import "./App.css";
+import Charts from "./Charts";
+import "../style/App.css";
 
 import ReactGA from "react-ga";
 ReactGA.initialize(process.env.REACT_APP_GA_ID);
 
 const axios = require("axios").default;
 const axiosInstance = axios.create();
-
-let timeFormat = "YYYY-MM-DD";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -124,87 +122,11 @@ function App() {
         </AppBar>
       </Slide>
 
-      <div className="charts">
-        <div className="chartContainer">
-          <Line
-            data={{ datasets: regionData.totalData }}
-            options={{
-              aspectRatio: 1.67,
-              maintainAspectRatio: false,
-              responsive: true,
-              title: {
-                display: true,
-                text: "Total COVID-19 Cases for " + selectedRegion.name,
-              },
-              elements: {
-                line: {
-                  tension: 0,
-                },
-              },
-              scales: {
-                xAxes: [
-                  {
-                    type: "time",
-                    time: {
-                      parser: timeFormat,
-                      tooltipFormat: "ll",
-                    },
-                    scaleLabel: {
-                      display: true,
-                      labelString: "Date",
-                    },
-                  },
-                ],
-                yAxes: [
-                  {
-                    scaleLabel: {
-                      display: true,
-                      labelString: "",
-                    },
-                  },
-                ],
-              },
-            }}
-          />
-        </div>
-        <div className="chartContainer">
-          <Bar
-            data={{ datasets: regionData.dailyData }}
-            options={{
-              aspectRatio: 1.67,
-              maintainAspectRatio: false,
-              responsive: true,
-              title: {
-                display: true,
-                text: "Daily COVID-19 Cases for " + selectedRegion.name,
-              },
-              scales: {
-                xAxes: [
-                  {
-                    type: "time",
-                    time: {
-                      parser: timeFormat,
-                      tooltipFormat: "ll",
-                    },
-                    scaleLabel: {
-                      display: true,
-                      labelString: "Date",
-                    },
-                  },
-                ],
-                yAxes: [
-                  {
-                    scaleLabel: {
-                      display: true,
-                      labelString: "",
-                    },
-                  },
-                ],
-              },
-            }}
-          />
-        </div>
-      </div>
+      <Charts
+        lineChartDatasets={regionData.totalData}
+        barChartDatasets={regionData.dailyData}
+        regionName={selectedRegion.name}
+      />
     </div>
   );
 }
