@@ -1,61 +1,66 @@
 const regions = require("../data/data.json");
 
 function getDefaultData() {
-  return {
-    datasets: [
-      {
-        label: "Confirmed Cases",
-        data: [],
-        fill: false,
-        borderColor: "blue",
-        backgroundColor: "blue",
-      },
-      {
-        label: "Recovered",
-        data: [],
-        fill: false,
-        borderColor: "green",
-        backgroundColor: "green",
-      },
-      {
-        label: "Deaths",
-        data: [],
-        fill: false,
-        borderColor: "red",
-        backgroundColor: "red",
-      },
-    ],
-  };
+  return [
+    {
+      label: "Confirmed Cases",
+      data: [],
+      fill: false,
+      borderColor: "blue",
+      backgroundColor: "blue",
+    },
+    {
+      label: "Recovered",
+      data: [],
+      fill: false,
+      borderColor: "green",
+      backgroundColor: "green",
+    },
+    {
+      label: "Active",
+      data: [],
+      fill: false,
+      borderColor: "orange",
+      backgroundColor: "orange",
+    },
+    {
+      label: "Deaths",
+      data: [],
+      fill: false,
+      borderColor: "red",
+      backgroundColor: "red",
+    },
+  ];
 }
 
 function formatDataForLineChart(regionData) {
   const data = getDefaultData();
 
-  data.datasets[0].data = regionData.map((day) => {
-    return {
+  let numrecover = 0;
+  regionData.forEach((day) => {
+    data[0].data.push({
       x: day.date,
       y: day.numtotal,
-    };
-  });
+    });
 
-  let numrecover = 0;
-  data.datasets[1].data = regionData.map((day) => {
     numrecover = Math.max(
       Number.isInteger(parseInt(day.numrecover)) ? day.numrecover : 0,
       numrecover
     );
-
-    return {
+    data[1].data.push({
       x: day.date,
       y: numrecover,
-    };
-  });
+    });
 
-  data.datasets[2].data = regionData.map((day) => {
-    return {
+    data[2].data.push({
+      x: day.date,
+      y: day.numtotal - day.numdeaths - numrecover,
+    });
+
+    data[3].data.push({
       x: day.date,
       y: day.numdeaths,
-    };
+    });
   });
 
   return data;
@@ -64,38 +69,35 @@ function formatDataForLineChart(regionData) {
 function formatDataForBarChart(regionData) {
   const data = getDefaultData();
 
-  data.datasets[0].data = regionData.map((day) => {
-    return {
-      x: day.date,
-      y: day.numtoday,
-    };
-  });
-
   let numrecover = 0;
   let lastrecover = 0;
-  data.datasets[1].data = regionData.map((day) => {
+  let numdeaths = 0;
+  regionData.forEach((day) => {
+    data[0].data.push({
+      x: day.date,
+      y: day.numtoday,
+    });
+
     numrecover = Number.isInteger(parseInt(day.numrecover))
       ? day.numrecover
       : numrecover;
     const recovered = Math.max(numrecover - lastrecover, 0);
     lastrecover = numrecover;
 
-    return {
+    data[1].data.push({
       x: day.date,
       y: recovered,
-    };
-  });
+    });
 
-  let numdeaths = 0;
-  data.datasets[2].data = regionData.map((day) => {
     const deaths = day.numdeaths - numdeaths;
     numdeaths = day.numdeaths;
-
-    return {
+    data[3].data.push({
       x: day.date,
       y: deaths,
-    };
+    });
   });
+
+  data.splice(2, 1);
 
   return data;
 }
