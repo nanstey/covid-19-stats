@@ -123,7 +123,7 @@ function App() {
       <div className="charts">
         <div className="chartContainer">
           <Line
-            data={regionData.totalData}
+            data={{ datasets: regionData.totalData }}
             options={{
               aspectRatio: 1.67,
               maintainAspectRatio: false,
@@ -165,7 +165,7 @@ function App() {
         </div>
         <div className="chartContainer">
           <Bar
-            data={regionData.dailyData}
+            data={{ datasets: regionData.dailyData }}
             options={{
               aspectRatio: 1.67,
               maintainAspectRatio: false,
