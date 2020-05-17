@@ -3,8 +3,15 @@ import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
+import IconButton from "@material-ui/core/IconButton";
+import MenuIcon from "@material-ui/icons/Menu";
+import Chip from "@material-ui/core/Chip";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import { Slide } from "@material-ui/core";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import { Bar, Line } from "react-chartjs-2";
 import "./App.css";
 const axios = require("axios").default;
@@ -43,6 +50,10 @@ async function getRegionData(id, cb) {
   }
 }
 
+function formatNumber(num) {
+  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+}
+
 function App() {
   const classes = useStyles();
   const [regions, setRegions] = useState([]);
@@ -55,6 +66,8 @@ function App() {
     totalData: [],
     dailyData: [],
   });
+  const [menuOpen, setMenuOpen] = useState(false);
+  const trigger = useScrollTrigger({ threshold: 50 });
 
   useEffect(() => {
     getRegions(setRegions);
@@ -66,29 +79,46 @@ function App() {
 
   return (
     <div className="App">
-      <AppBar position="fixed">
-        <Toolbar className="toolbar">
-          <Typography variant="h4" className={classes.title}>
-            {selectedRegion && selectedRegion.name}
-          </Typography>
-          <ToggleButtonGroup
-            variant="contained"
-            color="primary"
-            aria-label="contained primary button group"
-          >
-            {regions &&
-              regions.map((region) => (
-                <ToggleButton
-                  key={region.pruid}
-                  selected={region.pruid === selectedRegion.pruid}
-                  onClick={() => setSelectedRegion(region)}
-                >
-                  {region.code}
-                </ToggleButton>
-              ))}
-          </ToggleButtonGroup>
-        </Toolbar>
-      </AppBar>
+      <Slide in={!trigger}>
+        <AppBar position="fixed">
+          <Toolbar className="toolbar">
+            <IconButton
+              className="menuButton"
+              aria-label="more"
+              aria-controls="long-menu"
+              aria-haspopup="true"
+              onClick={() => setMenuOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h4" className={classes.title}>
+              {selectedRegion && selectedRegion.name}
+            </Typography>
+            <SwipeableDrawer
+              anchor="left"
+              open={menuOpen}
+              onOpen={() => setMenuOpen(true)}
+              onClose={() => setMenuOpen(false)}
+            >
+              <List>
+                {regions.map((region, index) => (
+                  <ListItem
+                    button
+                    key={region.pruid}
+                    onClick={() => {
+                      setSelectedRegion(region);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <ListItemText primary={region.name} />
+                    <Chip label={formatNumber(region.total)} color="primary" />
+                  </ListItem>
+                ))}
+              </List>
+            </SwipeableDrawer>
+          </Toolbar>
+        </AppBar>
+      </Slide>
 
       <div className="charts">
         <div className="chartContainer">
@@ -96,7 +126,7 @@ function App() {
             data={regionData.totalData}
             options={{
               aspectRatio: 1.67,
-              maintainAspectRatio: true,
+              maintainAspectRatio: false,
               responsive: true,
               title: {
                 display: true,
@@ -138,7 +168,7 @@ function App() {
             data={regionData.dailyData}
             options={{
               aspectRatio: 1.67,
-              maintainAspectRatio: true,
+              maintainAspectRatio: false,
               responsive: true,
               title: {
                 display: true,
