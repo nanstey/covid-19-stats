@@ -126,7 +126,7 @@ function App() {
             data={regionData.totalData}
             options={{
               aspectRatio: 1.67,
-              maintainAspectRatio: true,
+              maintainAspectRatio: false,
               responsive: true,
               title: {
                 display: true,
@@ -168,7 +168,7 @@ function App() {
             data={regionData.dailyData}
             options={{
               aspectRatio: 1.67,
-              maintainAspectRatio: true,
+              maintainAspectRatio: false,
               responsive: true,
               title: {
                 display: true,
