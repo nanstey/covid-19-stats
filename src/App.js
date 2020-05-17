@@ -6,10 +6,12 @@ import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Chip from "@material-ui/core/Chip";
-import Drawer from "@material-ui/core/Drawer";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import { Slide } from "@material-ui/core";
+import useScrollTrigger from "@material-ui/core/useScrollTrigger";
 import { Bar, Line } from "react-chartjs-2";
 import "./App.css";
 const axios = require("axios").default;
@@ -65,6 +67,7 @@ function App() {
     dailyData: [],
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const trigger = useScrollTrigger({ threshold: 50 });
 
   useEffect(() => {
     getRegions(setRegions);
@@ -76,39 +79,46 @@ function App() {
 
   return (
     <div className="App">
-      <AppBar position="fixed">
-        <Toolbar className="toolbar">
-          <IconButton
-            className="menuButton"
-            aria-label="more"
-            aria-controls="long-menu"
-            aria-haspopup="true"
-            onClick={() => setMenuOpen(true)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h4" className={classes.title}>
-            {selectedRegion && selectedRegion.name}
-          </Typography>
-          <Drawer anchor="left" open={menuOpen}>
-            <List>
-              {regions.map((region, index) => (
-                <ListItem
-                  button
-                  key={region.pruid}
-                  onClick={() => {
-                    setSelectedRegion(region);
-                    setMenuOpen(false);
-                  }}
-                >
-                  <ListItemText primary={region.name} />
-                  <Chip label={formatNumber(region.total)} color="primary" />
-                </ListItem>
-              ))}
-            </List>
-          </Drawer>
-        </Toolbar>
-      </AppBar>
+      <Slide in={!trigger}>
+        <AppBar position="fixed">
+          <Toolbar className="toolbar">
+            <IconButton
+              className="menuButton"
+              aria-label="more"
+              aria-controls="long-menu"
+              aria-haspopup="true"
+              onClick={() => setMenuOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography variant="h4" className={classes.title}>
+              {selectedRegion && selectedRegion.name}
+            </Typography>
+            <SwipeableDrawer
+              anchor="left"
+              open={menuOpen}
+              onOpen={() => setMenuOpen(true)}
+              onClose={() => setMenuOpen(false)}
+            >
+              <List>
+                {regions.map((region, index) => (
+                  <ListItem
+                    button
+                    key={region.pruid}
+                    onClick={() => {
+                      setSelectedRegion(region);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <ListItemText primary={region.name} />
+                    <Chip label={formatNumber(region.total)} color="primary" />
+                  </ListItem>
+                ))}
+              </List>
+            </SwipeableDrawer>
+          </Toolbar>
+        </AppBar>
+      </Slide>
 
       <div className="charts">
         <div className="chartContainer">
