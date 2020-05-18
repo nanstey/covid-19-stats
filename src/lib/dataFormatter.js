@@ -1,4 +1,4 @@
-const regions = require("../data/data.json");
+const regions = require("../../data/data.json");
 
 function getDefaultData() {
   return [
