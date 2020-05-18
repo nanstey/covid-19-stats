@@ -2,11 +2,11 @@ require("dotenv").config();
 const { Pool } = require("pg");
 
 const pool = new Pool({
-    host: process.env.PG_HOST,
-    database: process.env.PG_DATABASE,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    port: process.env.PG_PORT,
+  host: process.env.PG_HOST,
+  database: process.env.PG_DATABASE,
+  user: process.env.PG_USER,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT,
 });
 
 function insertData(row) {
@@ -27,21 +27,26 @@ function insertData(row) {
 }
 
 function getRegions() {
-    return pool.query(
-        "SELECT r.pruid, r.code, r.name, MAX(rd.numtotal) as total " +
-        "FROM region r " +
-        "JOIN region_data rd on r.pruid = rd.pruid " +
-        "WHERE hide = false " +
-        "GROUP BY r.pruid, r.code, r.name " +
-        "ORDER BY total DESC"
-    );
+  return pool.query(
+    "SELECT r.pruid, r.code, r.name, MAX(rd.numtotal) as total " +
+      "FROM region r " +
+      "JOIN region_data rd on r.pruid = rd.pruid " +
+      "WHERE hide = false " +
+      "GROUP BY r.pruid, r.code, r.name " +
+      "ORDER BY total DESC"
+  );
 }
 
-function getRegionData(id) {
-    return pool.query(
-        "SELECT * FROM region_data WHERE pruid = $1 ORDER BY date",
-        [id]
-    );
+function getRegionData(id, startDate, endDate) {
+  return pool.query(
+    "SELECT * " +
+      "FROM region_data " +
+      "WHERE pruid = $1 " +
+      "AND date >= $2 " +
+      "AND date <= $3 " +
+      "ORDER BY date",
+    [id, startDate, endDate]
+  );
 }
 
 exports.insertData = insertData;

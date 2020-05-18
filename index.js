@@ -45,7 +45,12 @@ app.get("/api/regions", async (req, res) => {
 
 app.get("/api/regions/:id", async (req, res) => {
   try {
-    const regionData = await getRegionData(req.params.id);
+    console.log(req.query);
+    const regionData = await getRegionData(
+      req.params.id,
+      req.query.startDate,
+      req.query.endDate
+    );
     const response = {
       totalData: formatDataForLineChart(regionData.rows),
       dailyData: formatDataForBarChart(regionData.rows),

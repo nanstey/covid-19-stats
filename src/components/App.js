@@ -18,9 +18,14 @@ async function getRegions(cb) {
   }
 }
 
+const startDate = "2020-03-15";
+const endDate = "2020-05-15";
+
 async function getRegionData(id, cb) {
   try {
-    let { data } = await axiosInstance(`/api/regions/${id}`);
+    let { data } = await axiosInstance(
+      `/api/regions/${id}?startDate=${startDate}&endDate=${endDate}`
+    );
     cb(data);
   } catch (error) {
     console.log(error);
