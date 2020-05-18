@@ -1,17 +1,23 @@
 const express = require("express");
 const path = require("path");
 var cors = require("cors");
-const app = express();
-const getData = require("./src/lib/getData.js");
-const { updateData } = require("./src/lib/updateData.js");
-const { pool } = require("./src/lib/db.js");
 
-var allowedOrigins = [
+const { updateData } = require("./src/lib/updateData.js");
+const { getRegions, getRegionData } = require("./src/lib/db.js");
+const {
+  formatDataForLineChart,
+  formatDataForBarChart,
+} = require("./src/lib/dataFormatter.js");
+
+const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:8080",
   "https://covid-19-stats-276205.wl.r.appspot.com/",
   "http://covid-19-stats.ca",
 ];
+
+const app = express();
+app.use(express.static(path.join(__dirname, "/build")));
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -26,18 +32,10 @@ app.use(
     },
   })
 );
-app.use(express.static(path.join(__dirname, "/build")));
 
 app.get("/api/regions", async (req, res) => {
   try {
-    const regions = await pool.query(
-      "SELECT r.pruid, r.code, r.name, MAX(rd.numtotal) as total " +
-        "FROM region r " +
-        "JOIN region_data rd on r.pruid = rd.pruid " +
-        "WHERE hide = false " +
-        "GROUP BY r.pruid, r.code, r.name " +
-        "ORDER BY total DESC"
-    );
+    const regions = await getRegions();
     res.json(regions.rows);
   } catch (err) {
     console.log(err);
@@ -47,13 +45,10 @@ app.get("/api/regions", async (req, res) => {
 
 app.get("/api/regions/:id", async (req, res) => {
   try {
-    const regionData = await pool.query(
-      "SELECT * FROM region_data WHERE pruid = $1 ORDER BY date",
-      [req.params.id]
-    );
+    const regionData = await getRegionData(req.params.id);
     const response = {
-      totalData: getData.formatDataForLineChart(regionData.rows),
-      dailyData: getData.formatDataForBarChart(regionData.rows),
+      totalData: formatDataForLineChart(regionData.rows),
+      dailyData: formatDataForBarChart(regionData.rows),
     };
 
     res.json(response);

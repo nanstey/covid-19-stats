@@ -26,5 +26,24 @@ function insertData(row) {
   );
 }
 
+function getRegions() {
+    return pool.query(
+        "SELECT r.pruid, r.code, r.name, MAX(rd.numtotal) as total " +
+        "FROM region r " +
+        "JOIN region_data rd on r.pruid = rd.pruid " +
+        "WHERE hide = false " +
+        "GROUP BY r.pruid, r.code, r.name " +
+        "ORDER BY total DESC"
+    );
+}
+
+function getRegionData(id) {
+    return pool.query(
+        "SELECT * FROM region_data WHERE pruid = $1 ORDER BY date",
+        [id]
+    );
+}
+
 exports.insertData = insertData;
-exports.pool = pool;
+exports.getRegions = getRegions;
+exports.getRegionData = getRegionData;
