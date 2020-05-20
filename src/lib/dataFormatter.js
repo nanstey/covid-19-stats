@@ -3,7 +3,7 @@ const regions = require("../../data/data.json");
 function getDefaultData() {
   return [
     {
-      label: "Confirmed Cases",
+      label: "Confirmed",
       data: [],
       fill: false,
       borderColor: "blue",
