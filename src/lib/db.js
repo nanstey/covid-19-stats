@@ -39,7 +39,11 @@ function getRegions() {
 
 function getRegionData(id) {
     return pool.query(
-        "SELECT * FROM region_data WHERE pruid = $1 ORDER BY date",
+        "SELECT * " +
+        "FROM region_data " +
+        "WHERE pruid = $1 " +
+        "AND date > '2020-03-10'" +
+        "ORDER BY date",
         [id]
     );
 }
