@@ -3,6 +3,8 @@ import Menus from "./Menus";
 import Charts from "./Charts";
 import "../style/App.css";
 
+import { getRegions as getRegionsFirestore } from "../services/firestore";
+
 import ReactGA from "react-ga";
 ReactGA.initialize(process.env.REACT_APP_GA_ID);
 
@@ -42,6 +44,12 @@ function App() {
   useEffect(() => {
     ReactGA.pageview(window.location.pathname + window.location.search);
     getRegions(setRegions);
+
+    async function getRegionsFromFirebase() {
+      getRegionsFirestore();
+    }
+
+    getRegionsFromFirebase();
   }, []);
 
   useEffect(() => {
