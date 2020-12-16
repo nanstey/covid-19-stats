@@ -27,7 +27,7 @@ export function getRegions() {
         const data = doc.data();
 
         return {
-          pruid: doc.id,
+          pruid: Number(doc.id),
           code: data.code,
           name: data.name,
           total: data.numTotal,
