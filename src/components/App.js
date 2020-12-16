@@ -3,31 +3,14 @@ import Menus from "./Menus";
 import Charts from "./Charts";
 import "../style/App.css";
 
-import { getRegions as getRegionsFirestore } from "../services/firestore";
+import { getRegions, getCovidDataForRegion } from "../services/firestore";
+import {
+  formatDataForLineChart,
+  formatDataForBarChart,
+} from "../lib/dataFormatter";
 
 import ReactGA from "react-ga";
 ReactGA.initialize(process.env.REACT_APP_GA_ID);
-
-const axios = require("axios").default;
-const axiosInstance = axios.create();
-
-async function getRegions(cb) {
-  try {
-    let { data } = await axiosInstance(`/api/regions`);
-    cb(data);
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-async function getRegionData(id, cb) {
-  try {
-    let { data } = await axiosInstance(`/api/regions/${id}`);
-    cb(data);
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 function App() {
   const [regions, setRegions] = useState([]);
@@ -43,17 +26,25 @@ function App() {
 
   useEffect(() => {
     ReactGA.pageview(window.location.pathname + window.location.search);
-    getRegions(setRegions);
 
     async function getRegionsFromFirebase() {
-      getRegionsFirestore();
+      await getRegions().then((regions) => setRegions(regions));
     }
 
     getRegionsFromFirebase();
   }, []);
 
   useEffect(() => {
-    getRegionData(selectedRegion.pruid, setRegionData);
+    async function getRegionsFromFirebase(id) {
+      await getCovidDataForRegion(id).then((covidData) =>
+        setRegionData({
+          totalData: formatDataForLineChart(covidData),
+          dailyData: formatDataForBarChart(covidData),
+        })
+      );
+    }
+
+    getRegionsFromFirebase(selectedRegion.pruid);
   }, [selectedRegion]);
 
   return (

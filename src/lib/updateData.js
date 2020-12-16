@@ -2,7 +2,10 @@ const request = require("request");
 const csv = require("csv-parser");
 const fs = require("fs");
 
-const { insertData } = require("./db.js");
+const {
+  updateCovidData,
+  updateRegionTotals,
+} = require("../services/firestore.js");
 
 function updateData() {
   request.get(
@@ -15,9 +18,10 @@ function updateData() {
           fs.createReadStream("data/data.csv")
             .pipe(csv())
             .on("data", (row) => {
-              insertData(row);
+              updateCovidData(row);
             })
             .on("end", () => {
+              updateRegionTotals();
               console.log("import complete");
               return true;
             });
@@ -29,5 +33,8 @@ function updateData() {
     }
   );
 }
+
+// updateData();
+updateRegionTotals();
 
 exports.updateData = updateData;

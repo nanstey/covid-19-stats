@@ -17,16 +17,112 @@ firebase.initializeApp(config);
 
 const db = firebase.firestore();
 
-export const getRegions = () => {
+export function getRegions() {
   return db
     .collection("regions")
+    .orderBy("numTotal", "desc")
     .get()
     .then(function (querySnapshot) {
-      querySnapshot.forEach(function (doc) {
-        console.log(doc.id, " => ", doc.data());
+      return querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+
+        return {
+          pruid: doc.id,
+          code: data.code,
+          name: data.name,
+          total: data.numTotal,
+        };
       });
     })
     .catch(function (error) {
-      console.log("Error getting documents: ", error);
+      console.error("Error getting documents: ", error);
     });
-};
+}
+
+export function getCovidDataForRegion(id) {
+  return db
+    .collection("covidData")
+    .where("prUid", "==", id)
+    .orderBy("date")
+    .get()
+    .then((querySnapshot) => {
+      return querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+
+        return {
+          pruid: data.prUid,
+          date: data.date.toDate().toISOString().slice(0, 10),
+          numconf: data.numConf,
+          numtoday: data.numToday,
+          numdeaths: data.numDeaths,
+          numtotal: data.numTotal,
+          numrecover: data.numRecover,
+        };
+      });
+    });
+}
+
+function updateRegionTotal(prUid, numTotal) {
+  db.collection("regions")
+    .doc(prUid.toString())
+    .set({ numTotal: numTotal }, { merge: true });
+}
+
+function updateRegionTotals() {
+  db.collection("covidData")
+    .orderBy("date", "desc")
+    .orderBy("prUid", "asc")
+    .limit(14)
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        updateRegionTotal(data.prUid, data.numTotal);
+      });
+    })
+    .catch((error) => {
+      console.error("Error while updating region totals: ", error);
+    });
+}
+
+function updateCovidData({
+  pruid,
+  prname,
+  date,
+  numconf,
+  numprob,
+  numdeaths,
+  numtotal,
+  numtested,
+  numrecover,
+  percentrecover,
+  ratetested,
+  numtoday,
+  percentoday,
+}) {
+  const Ymd = date.split("-").reverse().join("-");
+  const id = pruid + "-" + Ymd;
+
+  db.collection("covidData")
+    .doc(id)
+    .set({
+      date: firebase.firestore.Timestamp.fromDate(new Date(Ymd + " 00:00")),
+      prUid: Number(pruid),
+      prName: prname,
+      numConf: Number(numconf),
+      numProb: Number(numprob),
+      numDeaths: Number(numdeaths),
+      numTotal: Number(numtotal),
+      numRecover: numrecover === "N/A" ? 0 : Number(numrecover),
+      numTested: Number(numtested),
+      numToday: Number(numtoday),
+      percentRecover: Number(percentrecover),
+      percentToday: Number(percentoday),
+      rateTested: Number(ratetested),
+    });
+}
+
+// exports.getRegions = getRegions;
+// exports.getCovidDataForRegion = getCovidDataForRegion;
+// exports.updateCovidData = updateCovidData;
+// exports.updateRegionTotals = updateRegionTotals;

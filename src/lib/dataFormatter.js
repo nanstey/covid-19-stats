@@ -1,5 +1,3 @@
-const regions = require("../../data/data.json");
-
 function getDefaultData() {
   return [
     {
@@ -102,10 +100,5 @@ function formatDataForBarChart(regionData) {
   return data;
 }
 
-function getRegionDataById(id) {
-  return regions.find((region) => region.id === id);
-}
-
 exports.formatDataForLineChart = formatDataForLineChart;
 exports.formatDataForBarChart = formatDataForBarChart;
-exports.getRegionDataById = getRegionDataById;
