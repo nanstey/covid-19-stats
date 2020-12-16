@@ -1,6 +1,7 @@
 import firebase from "firebase";
-require("firebase/firestore");
-require("dotenv").config();
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -17,7 +18,7 @@ firebase.initializeApp(config);
 
 const db = firebase.firestore();
 
-export function getRegions() {
+function getRegions() {
   return db
     .collection("regions")
     .orderBy("numTotal", "desc")
@@ -39,7 +40,7 @@ export function getRegions() {
     });
 }
 
-export function getCovidDataForRegion(id) {
+function getCovidDataForRegion(id) {
   return db
     .collection("covidData")
     .where("prUid", "==", id)
@@ -122,7 +123,9 @@ function updateCovidData({
     });
 }
 
-// exports.getRegions = getRegions;
-// exports.getCovidDataForRegion = getCovidDataForRegion;
-// exports.updateCovidData = updateCovidData;
-// exports.updateRegionTotals = updateRegionTotals;
+export {
+  getRegions,
+  getCovidDataForRegion,
+  updateCovidData,
+  updateRegionTotals,
+};

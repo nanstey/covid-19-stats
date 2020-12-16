@@ -100,5 +100,4 @@ function formatDataForBarChart(regionData) {
   return data;
 }
 
-exports.formatDataForLineChart = formatDataForLineChart;
-exports.formatDataForBarChart = formatDataForBarChart;
+export { formatDataForLineChart, formatDataForBarChart };

@@ -1,6 +1,6 @@
-const request = require("request");
-const csv = require("csv-parser");
-const fs = require("fs");
+import request from "request";
+import csv from "csv-parser";
+import fs from "fs";
 
 const {
   updateCovidData,
@@ -34,7 +34,6 @@ function updateData() {
   );
 }
 
-// updateData();
-updateRegionTotals();
+updateData();
 
-exports.updateData = updateData;
+export { updateData };
