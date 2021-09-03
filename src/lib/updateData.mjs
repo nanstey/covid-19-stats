@@ -2,10 +2,10 @@ import request from "request";
 import csv from "csv-parser";
 import fs from "fs";
 
-const {
+import {
   updateCovidData,
   updateRegionTotals,
-} = require("../services/firestore.js");
+} from "../services/firestore.mjs";
 
 function updateData() {
   request.get(
